@@ -1,12 +1,16 @@
 #! usr/bin/env python
 
 import httplib, re, datetime, time
-import urlparse
 import urllib
 import oauth2 as oauth
 from parsers.lixml import LinkedInXMLParser
 from lxml import etree
 from lxml.builder import ElementMaker
+
+try:
+    from urlparse import parse_qsl
+except ImportError:
+    from cgi import parse_qsl
 
 class LinkedInAPI(object):
     def __init__(self, ck, cs):
@@ -44,7 +48,7 @@ class LinkedInAPI(object):
         request_token_url = self.base_url + self.request_token_path
         
         resp, content = client.request(request_token_url, 'POST')
-        request_token = dict(urlparse.parse_qsl(content))
+        request_token = dict(parse_qsl(content))
         return request_token
     
     def get_access_token(self, request_token, verifier):
@@ -60,7 +64,7 @@ class LinkedInAPI(object):
         access_token_url = self.base_url + self.access_token_path
         
         resp, content = client.request(access_token_url, 'POST')
-        access_token = dict(urlparse.parse_qsl(content))
+        access_token = dict(parse_qsl(content))
         return access_token
     
     def get_user_profile(self, access_token, selectors=None, **kwargs):
